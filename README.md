@@ -1,2 +1,2 @@
-# Parallel Low Pass Filter
-This project is used to load different images using opencv library and increase the smoothness of the image by filtering or blurring it and the old and new versions of the image are displayed to the user.
+# Parallel Low Pass Filter by OpenMP
+This project is used to load different images using opencv library and increase the smoothness of the image by filtering or blurring it and the old and new versions of the image are displayed to the user. This is done through convolution of kernel image that is applied to all the pixels of the image. OpenMP library was included to execute the image filtering in parallel through different threads where the user could determine the number of threads he wants to run his code.
