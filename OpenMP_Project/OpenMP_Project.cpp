@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 {
     double start_time, end_time;  //variables to calculate time of each method
     //Upload image using CV Mat class
-    cv::Mat image = cv::imread("..\\Cat.png", cv::IMREAD_COLOR);
+    cv::Mat image = cv::imread("..\\Lena.png", cv::IMREAD_COLOR);
     if (image.empty())
     {
         cout << "Could not find or open the image" << endl;
