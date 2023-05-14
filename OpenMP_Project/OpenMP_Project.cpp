@@ -14,7 +14,7 @@ int main(int argc, char** argv)
         cout << "Could not find or open the image" << endl;
         return -1;
     }
-    String windowTitle = "Lena"; //Name of the window
+    String windowTitle = "Normal Image"; //Name of the window
 
     namedWindow(windowTitle); // Create a window
 
