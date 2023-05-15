@@ -22,8 +22,8 @@ int main(int argc, char** argv)
 
     int rows = image.rows;
     int cols = image.cols;
-    int kernel_size, numThreads;
-    cout << "Image rows no: " << rows << "  Image cols no: " << cols;
+    int kernel_size = 11, numThreads;
+    cout << "\n\n\n\n\n\n\nImage rows no: " << rows << "  Image cols no: " << cols;
     cout << "\nEnter the kernel size (odd value): ";
     cin >> kernel_size;
     //If the kernel size is even, add 1 to be odd
@@ -41,23 +41,23 @@ int main(int argc, char** argv)
     //Iterate over the pixels (rows and cols) of the image 
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols ; j++) {
-
+            
             cv::Vec3b& pixel = image.at<cv::Vec3b>(i, j);
 
-            // Perform low-pass filtering operation on the pixel with the Kernel size the user entered.
-            //Iterates over a kernel_sizexkernel_size kernel centered around the current pixel
+             // Perform low-pass filtering operation on the pixel with the Kernel size the user entered.
+            // Iterates over a kernel_sizexkernel_size kernel centered around the current pixel
             int blueSum = 0, greenSum = 0, redSum = 0, count = 0;
             for (int k = -border_size; k <= border_size; k++) {
                 for (int l = -border_size; l <= border_size; l++) {
 
-                    int row = i + k;
-                    int col = j + l;
+                    int kernel_row = i + k;
+                    int kernel_col = j + l;
 
                     // Check if the current neighbor pixel is within the image 
-                    if (row >= 0 && row < rows && col >= 0 && col < cols) {
-                        blueSum += image.at<cv::Vec3b>(row, col)[0];
-                        greenSum += image.at<cv::Vec3b>(row, col)[1];
-                        redSum += image.at<cv::Vec3b>(row, col)[2];
+                    if (kernel_row >= 0 && kernel_row < rows && kernel_col >= 0 && kernel_col < cols) {
+                        blueSum += image.at<cv::Vec3b>(kernel_row, kernel_col)[0];
+                        greenSum += image.at<cv::Vec3b>(kernel_row, kernel_col)[1];
+                        redSum += image.at<cv::Vec3b>(kernel_row, kernel_col)[2];
                         count++;
                     }
                 }
@@ -74,32 +74,72 @@ int main(int argc, char** argv)
     std::cout << "Time elapsed: " << end_time - start_time << " seconds\n";
 
     //Wait for any keystroke in the window
-    waitKey(0); 
-    destroyAllWindows(); //destroy all opened windows
+    waitKey(0);
+    destroyAllWindows(); 
 
     return 0;
 }
 
 
-/*cv::Vec3f sum(0.0f, 0.0f, 0.0f);
+/*
+* 
+#include <iostream>
+#include <vector>
+#include <omp.h>
 
-                    int row = i + k;
-                    int col = j + l;
-                    
-    cv::Vec3b pixel = image.at<cv::Vec3b>(row, col);
 
-    // Accumulate the pixel values
-    sum += cv::Vec3f(pixel[0], pixel[1], pixel[2]);
+
+// Function to perform low pass filtering using a 3x3 kernel
+void lowPassFilter(const std::vector<std::vector<int>>& input, std::vector<std::vector<int>>& output) {
+    int rows = input.size();
+    int cols = input[0].size();
+
+#pragma omp parallel for collapse(2)
+    for (int i = 2; i < rows - 2; ++i) {
+        for (int j = 2; j < cols - 2; ++j) {
+            int sum = 0;
+            for (int k = -2; k <= 2; ++k) {
+                for (int l = -2; l <= 2; ++l) {
+                    sum += input[i + k][j + l];
                 }
             }
+            output[i][j] = sum / 25;
+        }
+    }
+}
+int main() {
+    std::vector<std::vector<int>> input = {
+        {1, 2, 3, 4, 5},
+        {6, 7, 8, 9, 10},
+        {11, 12, 13, 14, 15},
+        {16, 17, 18, 19, 20},
+        {21, 22, 23, 24, 25},       
+        {1, 2, 3, 4, 5},
+        {6, 7, 8, 9, 10},
+        {11, 12, 13, 14, 15},
+        {16, 17, 18, 19, 20},
+        {21, 22, 23, 24, 25},      
+        {1, 2, 3, 4, 5},
+        {6, 7, 8, 9, 10},
+        {11, 12, 13, 14, 15},
+        {16, 17, 18, 19, 20},
+        {21, 22, 23, 24, 25},
+    };
 
-            // Compute the average
-            cv::Vec3b average(sum[0] / (pow(kernel_size, 2)),
-                sum[1] / (pow(kernel_size, 2)),
-                sum[2] / (pow(kernel_size, 2)));
+    int rows = input.size();
+    int cols = input[0].size();
 
-            // Set the filtered pixel value
-            image.at<cv::Vec3b>(i, j) = average; */
-            //  int paddingSize = kernel_size / 2; // Padding size for a 5x5 kernel (2 pixels on each side)
+    std::vector<std::vector<int>> output(rows, std::vector<int>(cols, 0));
 
-               // cv::copyMakeBorder(image, image, paddingSize, paddingSize, paddingSize, paddingSize, cv::BORDER_CONSTANT, cv::Scalar(0));
+    lowPassFilter(input, output);
+
+    // Print the filtered output
+    for (const auto& row : output) {
+        for (const auto& val : row) {
+            std::cout << val << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    return 0;
+}*/
