@@ -36,7 +36,9 @@ int main(int argc, char** argv)
     omp_set_num_threads(numThreads);
     start_time = omp_get_wtime(); //Get start time of the parallel section
 
-        #pragma omp parallel for num_threads(numThreads)
+    int chunkSize = ((pow(kernel_size,2)) * rows * cols) / numThreads;
+    cout << "\nChunk Size: " << chunkSize;
+
     //Parallelize the outer loop, allowing multiple threads to process different rows of the image concurrently.
     //Iterate over the pixels (rows and cols) of the image 
     for (int i = 0; i < rows; i++) {
@@ -47,8 +49,10 @@ int main(int argc, char** argv)
              // Perform low-pass filtering operation on the pixel with the Kernel size the user entered.
             // Iterates over a kernel_sizexkernel_size kernel centered around the current pixel
             int blueSum = 0, greenSum = 0, redSum = 0, count = 0;
-            for (int k = -border_size; k <= border_size; k++) {
-                for (int l = -border_size; l <= border_size; l++) {
+#pragma omp parallel for num_threads(numThreads) schedule(dynamic, 512)
+
+            for (int k = 0; k < kernel_size; k++) {
+                for (int l = 0; l < kernel_size; l++) {
 
                     int kernel_row = i + k;
                     int kernel_col = j + l;
