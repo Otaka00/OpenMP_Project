@@ -50,7 +50,8 @@ int main(int argc, char** argv)
           // Iterates over a kernel_sizexkernel_size kernel centered around the current pixel as the origin.
             int blueSum = 0, greenSum = 0, redSum = 0, count = 0;
 
-            #pragma omp parallel for collapse(2) reduction(+:greenSum, redSum, blueSum, count) 
+    #pragma omp parallel num_threads(numThreads) 
+        #pragma omp for collapse(2) 
             for (int k = -border_size; k <= border_size; k++) {
                 for (int l = -border_size; l <= border_size; l++) {
 
